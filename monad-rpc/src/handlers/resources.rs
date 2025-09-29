@@ -21,7 +21,7 @@ use actix_web::{
     Error,
 };
 use monad_archive::prelude::ArchiveReader;
-use monad_ethcall::EthCallExecutor;
+use monad_ethcall::{BundleExecutor, EthCallExecutor};
 use monad_triedb_utils::triedb_env::TriedbEnv;
 use tokio::sync::{Mutex, Semaphore};
 use tracing_actix_web::RootSpanBuilder;
@@ -37,6 +37,7 @@ pub struct MonadRpcResources {
     pub txpool_bridge_client: EthTxPoolBridgeClient,
     pub triedb_reader: Option<TriedbEnv>,
     pub eth_call_executor: Option<Arc<Mutex<EthCallExecutor>>>,
+    pub bundle_executor: Option<Arc<BundleExecutor>>,
     pub eth_call_executor_fibers: usize,
     pub eth_call_stats_tracker: Option<Arc<EthCallStatsTracker>>,
     pub archive_reader: Option<ArchiveReader>,
@@ -63,6 +64,7 @@ impl MonadRpcResources {
         txpool_bridge_client: EthTxPoolBridgeClient,
         triedb_reader: Option<TriedbEnv>,
         eth_call_executor: Option<Arc<Mutex<EthCallExecutor>>>,
+        bundle_executor: Option<Arc<BundleExecutor>>,
         eth_call_executor_fibers: usize,
         archive_reader: Option<ArchiveReader>,
         chain_id: u64,
@@ -86,6 +88,7 @@ impl MonadRpcResources {
             txpool_bridge_client,
             triedb_reader,
             eth_call_executor,
+            bundle_executor,
             eth_call_executor_fibers,
             eth_call_stats_tracker: if enable_eth_call_statistics {
                 Some(Arc::new(EthCallStatsTracker::default()))

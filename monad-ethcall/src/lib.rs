@@ -40,6 +40,10 @@ pub mod bindings {
     include!(concat!(env!("OUT_DIR"), "/ethcall.rs"));
 }
 
+pub mod bundle_executor;
+
+pub use bundle_executor::{BundleExecutor, BundleInclusion, BundleResult, BundleTransaction};
+
 #[derive(Debug)]
 pub struct EthCallExecutor {
     eth_call_executor: *mut bindings::monad_eth_call_executor,

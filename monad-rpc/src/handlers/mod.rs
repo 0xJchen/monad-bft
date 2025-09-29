@@ -60,6 +60,7 @@ use crate::{
 mod debug;
 pub mod eth;
 mod meta;
+pub mod mev;
 pub mod resources;
 
 pub async fn rpc_handler(
@@ -790,6 +791,28 @@ async fn web3_clientVersion(
     monad_web3_client_version().map(serialize_result)?
 }
 
+#[allow(non_snake_case)]
+async fn mev_simBundle(
+    _: RequestId,
+    app_state: &MonadRpcResources,
+    params: Value,
+) -> Result<Box<RawValue>, JsonRpcError> {
+    let triedb_env = app_state.triedb_reader.as_ref().method_not_supported()?;
+    let Some(ref bundle_executor) = app_state.bundle_executor else {
+        return Err(JsonRpcError::method_not_supported());
+    };
+
+    let params = serde_json::from_value(params).invalid_params()?;
+    mev::sim_bundle::mev_sim_bundle(
+        triedb_env,
+        bundle_executor.clone(),
+        app_state.chain_id,
+        params,
+    )
+    .await
+    .map(serialize_result)?
+}
+
 macro_rules! enabled_methods {
     ($($(#[$attr:meta])* $method:ident),* $(,)?) => {
 
@@ -873,6 +896,7 @@ enabled_methods!(
     eth_feeHistory,
     eth_getTransactionReceipt,
     eth_getBlockReceipts,
+    mev_simBundle,
     net_version,
     txpool_statusByHash,
     txpool_statusByAddress,

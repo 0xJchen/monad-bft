@@ -406,6 +406,30 @@ impl JsonRpcError {
             data: None,
         }
     }
+
+    pub fn execution_error(message: String) -> Self {
+        Self {
+            code: -32015,
+            message,
+            data: None,
+        }
+    }
+
+    pub fn timeout_error(message: &str) -> Self {
+        Self {
+            code: -32016,
+            message: message.to_string(),
+            data: None,
+        }
+    }
+
+    pub fn invalid_params_with_details(message: String) -> Self {
+        Self {
+            code: -32602,
+            message,
+            data: None,
+        }
+    }
 }
 
 pub fn archive_to_jsonrpc_error<'a, A: Into<std::borrow::Cow<'a, str>>>(
